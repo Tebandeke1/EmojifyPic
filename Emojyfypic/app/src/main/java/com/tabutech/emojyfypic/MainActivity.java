@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_STORAGE_PERMISSION = 1;
 
     FloatingActionButton mClearFab,mSaveFab,mShareFab;
-    Button mEmojifyButton;
+    Button mEmojifyButton,galleryButton;
     ImageView mImageView;
     TextView mTitleTextView;
 
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
          mShareFab = findViewById(R.id.share_button);
 
          mImageView = findViewById(R.id.image_view);
+         galleryButton = findViewById(R.id.emojify_button2);
 
          //setting on click Listeners
          mEmojifyButton.setOnClickListener(new View.OnClickListener() {
@@ -82,9 +83,25 @@ public class MainActivity extends AppCompatActivity {
              }
          });
 
+         galleryButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 getImageFromGallery();
+             }
+         });
+
 
         // Set up Timber
         timber.log.Timber.plant(new Timber.DebugTree());
+    }
+
+    /**
+     * onclicking on the getImageFromGallery, then you get image from the Gallery!!
+     */
+
+    //TODO COMPLETE THIS METHOD
+    private void getImageFromGallery() {
+        Toast.makeText(this, "This Will be Used when the details are put in the method..", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -186,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Toggle Visibility of the views
         mEmojifyButton.setVisibility(View.GONE);
+        galleryButton.setVisibility(View.GONE);
         mTitleTextView.setVisibility(View.GONE);
         mSaveFab.setVisibility(View.VISIBLE);
         mShareFab.setVisibility(View.VISIBLE);
@@ -196,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Detect the faces and overlay the appropriate emoji
-        mResultsBitmap = Emojifier.detectFacesandOverlayEmoji(this, mResultsBitmap);
+        mResultsBitmap = Emojifier.detectFacesAndOverlayEmoji(this, mResultsBitmap);
 
         // Set the new bitmap to the ImageView
         mImageView.setImageBitmap(mResultsBitmap);
@@ -208,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void saveMe() {
         // Delete the temporary image file
-        BitMapUtils.deleteImageFile(this, mTempPhotoPath);
+        //BitMapUtils.deleteImageFile(this, mTempPhotoPath);
 
         // Save the image
         BitMapUtils.saveImage(this, mResultsBitmap);
@@ -236,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
         // Clear the image and toggle the view visibility
         mImageView.setImageResource(0);
         mEmojifyButton.setVisibility(View.VISIBLE);
+        galleryButton.setVisibility(View.VISIBLE);
         mTitleTextView.setVisibility(View.VISIBLE);
         mShareFab.setVisibility(View.GONE);
         mSaveFab.setVisibility(View.GONE);

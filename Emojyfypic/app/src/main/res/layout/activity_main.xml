@@ -25,20 +25,38 @@
         android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/emojify_button"
+        android:layout_above="@+id/emoji_layout"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/view_margin"
         android:text="@string/emojify_me"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
-    <Button
-        android:id="@+id/emojify_button"
+    <LinearLayout
+        android:id="@+id/emoji_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/go"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/emojify_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#615858"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/go"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+        <Button
+            android:id="@+id/emojify_button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/get"
+            android:backgroundTint="#5E5353"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+    </LinearLayout>
+
 
 
 

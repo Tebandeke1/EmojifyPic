@@ -120,9 +120,8 @@ public class BitMapUtils {
      *
      * @param context The application context.
      * @param image   The image to be saved.
-     * @return The path of the saved image.
      */
-    static String saveImage(Context context, Bitmap image) {
+    static void saveImage(Context context, Bitmap image) {
 
         String savedImagePath = null;
 
@@ -158,7 +157,6 @@ public class BitMapUtils {
             Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show();
         }
 
-        return savedImagePath;
     }
 
     /**
