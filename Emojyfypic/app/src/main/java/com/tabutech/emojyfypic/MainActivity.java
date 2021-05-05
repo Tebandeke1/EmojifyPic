@@ -9,6 +9,7 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     Button mEmojifyButton,galleryButton;
     ImageView mImageView;
     TextView mTitleTextView;
+
+    private boolean checkWhichButtonPressed = false;
+
+    Uri imageUri;
 
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
 
@@ -101,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO COMPLETE THIS METHOD
     private void getImageFromGallery() {
-        Toast.makeText(this, "This Will be Used when the details are put in the method..", Toast.LENGTH_SHORT).show();
+        Intent gallery = new Intent();
+        gallery.setType("image/*");
+        gallery.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(gallery,"select Picture"),REQUEST_IMAGE_CAPTURE);
+        checkWhichButtonPressed = true;
     }
 
     /**
@@ -156,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             // Create the temporary File where the photo should go
             File photoFile = null;
             try {
-                photoFile = BitMapUtils.createTempImageFile(this);
+                photoFile = BitMapUtils.createTempImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
                 ex.printStackTrace();
@@ -176,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
                 // Launch the camera activity
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
     }
@@ -187,8 +196,13 @@ public class MainActivity extends AppCompatActivity {
         // If the image capture activity was called and was successful
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // Process the image and set it to the TextView
-            processAndSetImage();
+
+            if (checkWhichButtonPressed) {
+                processImageFromGallery(data);
+            } else{
+                // Process the image and set it to the imageView
+                processAndSetImage();
+             }
         } else {
 
             // Otherwise, delete the temporary image file
@@ -196,8 +210,62 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
-     * Method for processing the captured image and setting it to the TextView.
+     * First this method will help in getting Image fileName or path.
+     */
+
+    private String getRealFilePath(Uri uri){
+
+        String thePath = "no-path-found";
+        String[] filePathColumn = {MediaStore.Images.Media.DISPLAY_NAME};
+        Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+        if(cursor.moveToFirst()){
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            thePath = cursor.getString(columnIndex);
+        }
+        cursor.close();
+        return  thePath;
+    }
+
+    /**
+     * Method for processing the images picked from the gallery to the imageView
+     */
+
+    private void processImageFromGallery(Intent data){
+
+        // Toggle Visibility of the views
+        mEmojifyButton.setVisibility(View.GONE);
+        galleryButton.setVisibility(View.GONE);
+        mTitleTextView.setVisibility(View.GONE);
+        mSaveFab.setVisibility(View.VISIBLE);
+        mShareFab.setVisibility(View.VISIBLE);
+        mClearFab.setVisibility(View.VISIBLE);
+
+        imageUri = data.getData();
+
+        try {
+
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),imageUri);
+
+
+            //mTempPhotoPath = getRealFilePath(imageUri);
+
+            // Resample the saved image to fit the ImageView
+            mResultsBitmap = BitMapUtils.resamplePic(this, mTempPhotoPath);
+
+            // Detect the faces and overlay the appropriate emoji
+            mResultsBitmap = Emojifier.detectFacesAndOverlayEmoji(this, bitmap);
+
+            //set the picked image to the image view
+            mImageView.setImageBitmap(mResultsBitmap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method for processing the captured image and setting it to the Image View
      */
     private void processAndSetImage() {
 
@@ -226,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void saveMe() {
         // Delete the temporary image file
-        //BitMapUtils.deleteImageFile(this, mTempPhotoPath);
+        BitMapUtils.deleteImageFile(this, mTempPhotoPath);
 
         // Save the image
         BitMapUtils.saveImage(this, mResultsBitmap);
