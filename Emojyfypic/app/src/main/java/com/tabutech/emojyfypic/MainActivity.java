@@ -60,40 +60,15 @@ public class MainActivity extends AppCompatActivity {
          galleryButton = findViewById(R.id.emojify_button2);
 
          //setting on click Listeners
-         mEmojifyButton.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 emojifyMe();
-             }
-         });
+         mEmojifyButton.setOnClickListener(v -> emojifyMe());
 
-         mClearFab.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 clearImage();
-             }
-         });
+         mClearFab.setOnClickListener(v -> clearImage());
 
-         mSaveFab.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 saveMe();
-             }
-         });
+         mSaveFab.setOnClickListener(v -> saveMe());
 
-         mShareFab.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 shareMe();
-             }
-         });
+         mShareFab.setOnClickListener(v -> shareMe());
 
-         galleryButton.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 getImageFromGallery();
-             }
-         });
+         galleryButton.setOnClickListener(v -> getImageFromGallery());
 
 
         // Set up Timber
@@ -120,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
     public void emojifyMe() {
         // Check for the external storage permission
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             // If you do not have permission, request it
             ActivityCompat.requestPermissions(this,
@@ -165,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             // Create the temporary File where the photo should go
             File photoFile = null;
             try {
-                photoFile = BitMapUtils.createTempImageFile();
+                photoFile = BitMapUtils.createTempImageFile(this);
             } catch (IOException ex) {
                 // Error occurred while creating the File
                 ex.printStackTrace();
@@ -185,7 +159,8 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
                 // Launch the camera activity
-                //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+               // Toast.makeText(this, "The camera here is not working..", Toast.LENGTH_SHORT).show();
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
     }
