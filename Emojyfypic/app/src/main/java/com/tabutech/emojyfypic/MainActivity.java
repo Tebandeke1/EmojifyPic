@@ -11,8 +11,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +25,10 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+
 import timber.log.Timber;
 
 
@@ -44,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private String mTempPhotoPath;
 
     private Bitmap mResultsBitmap;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,18 +195,6 @@ public class MainActivity extends AppCompatActivity {
      * First this method will help in getting Image fileName or path.
      */
 
-    private String getRealFilePath(Uri uri){
-
-        String thePath = "no-path-found";
-        String[] filePathColumn = {MediaStore.Images.Media.DISPLAY_NAME};
-        Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-        if(cursor.moveToFirst()){
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            thePath = cursor.getString(columnIndex);
-        }
-        cursor.close();
-        return  thePath;
-    }
 
     /**
      * Method for processing the images picked from the gallery to the imageView
@@ -224,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),imageUri);
 
 
-            //mTempPhotoPath = getRealFilePath(imageUri);
+            mTempPhotoPath = imageUri.getPath();
 
             // Resample the saved image to fit the ImageView
             mResultsBitmap = BitMapUtils.resamplePic(this, mTempPhotoPath);
